@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+
+include(CMakeFindDependencyMacro)
+find_dependency(libGMP REQUIRED)
+find_dependency(libGMPXX REQUIRED)
+
+include(${CMAKE_CURRENT_LIST_DIR}/OPHELibTargets.cmake)
