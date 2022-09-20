@@ -19,48 +19,6 @@ void ECC::get_random_mpz(mpz_t mpz_r) {
 
 }
 
-void ECC::test_gmp() {
-    mpz_t a, b, c;
-
-    // 初始化a
-    mpz_init(a);
-
-    // 初始化 b, 16进制
-    mpz_init_set_str(b, "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f", 16);
-    gmp_printf("b: %Zd\n", b);
-
-    // 初始化 c ,10进制
-    mpz_init_set_str(c, "16", 10);
-    gmp_printf("c : %Zd\n", c);
-
-    // a = b-c
-    mpz_sub(a, b, c);
-    gmp_printf("a=b-c : %Zd\n", a);
-
-    // mpz_t -> mpz_class
-    mpz_class a_class(a);
-    cout << "mpz_t -> mpz_class :  " << a_class << "\n";
-
-    // mpz_class - > mpz_t
-    gmp_printf("mpz_class - > mpz_t : %Zd\n", a_class.get_mpz_t());
-
-    mpz_t mpz_r;
-    // 一定要初始化mpz
-    mpz_init(mpz_r);
-    ECC::get_random_mpz(mpz_r);
-
-    cout << "random_state is :" << mpz_r << endl;
-
-    mpz_class x, y;
-    mpz_class ff;
-    int e = 100;
-    x = "-331414141432233333445453333333333322222333123";
-    y = "-342389238";
-    ff = y * y - x * x * x - e * x;
-    cout << "mpz class sum is :  " << ff << "\n";
-
-}
-
 vector<mpz_class> ECC::get_public_key() {
     //        vector<mpz_class> pub_vec(2);
     //        pub_vec[0] = this->public_key[0];
@@ -169,19 +127,26 @@ void ECC::ecc_add(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> 
     mpz_class mod_inv_number;
 
     if (x1 == x2) {
-//        mod_inv(2 * y1, this->param_p, mod_inv_number);
-//        m = (3 * x1 * x1 + this->param_a) * mod_inv_number;
-        m = (3 * x1 * x1 + this->param_a) * mod_inv(2 * y1, this->param_p);
+        mpz_class y1_2 = 2 * y1;
+        mod_inv2(y1_2, this->param_p, mod_inv_number);
+        m = (3 * x1 * x1 + this->param_a) * mod_inv_number;
+//        m = (3 * x1 * x1 + this->param_a) * mod_inv2(2 * y1, this->param_p);
     } else {
-//        mod_inv(x2 - x1, this->param_p, mod_inv_number);
-//        m = (y2 - y1) * mod_inv_number;
-        m = (y2 - y1) * mod_inv(x2 - x1, this->param_p);
+        mpz_class x2_x1;
+        mod_inv2(x2_x1, this->param_p, mod_inv_number);
+        m = (y2 - y1) * mod_inv_number;
+//        m = (y2 - y1) * mod_inv2(x2 - x1, this->param_p);
     }
     mpz_class x3 = m * m - x1 - x2;
     mpz_class y3 = m * (x1 - x3) - y1;
     R[0] = ECC::positive_mod(x3, this->param_p);
     R[1] = ECC::positive_mod(y3, this->param_p);
 
+}
+
+void ECC::ecc_sub(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R) {
+    vector<mpz_class> neg_Q = ecc_neg(Q);
+    ecc_add(P, neg_Q, R);
 }
 
 
@@ -240,7 +205,7 @@ void ECC::mod_inv(mpz_class u, mpz_class v, mpz_class &n) {
     n = x;
 }
 
-mpz_class PowerMod(mpz_class a, mpz_class b, mpz_class c) {
+mpz_class ECC::power_method(mpz_class a, mpz_class b, mpz_class c) {
     mpz_class ans = 1;
     a = a % c;
     while (b > 0) //取出的b==0时也就代表取二进制位取完了，循环也就结束
@@ -255,10 +220,21 @@ mpz_class PowerMod(mpz_class a, mpz_class b, mpz_class c) {
 
 mpz_class ECC::mod_inv2(mpz_class u, mpz_class v) {
 
-    return PowerMod(u, v - 2, v);
+//    return power_method(u, v - 2, v);
+    mpz_class pow_num;
+    mpz_class v_2 = v - 2;
+    mpz_powm(pow_num.get_mpz_t(), u.get_mpz_t(), v_2.get_mpz_t(), v.get_mpz_t());
+    return pow_num;
+}
+
+void ECC::mod_inv2(mpz_class &u, mpz_class &v, mpz_class &n) {
+
+    mpz_class v_2 = v - 2;
+    mpz_powm(n.get_mpz_t(), u.get_mpz_t(), v_2.get_mpz_t(), v.get_mpz_t());
 }
 
 mpz_class ECC::mod_inv3(mpz_class u, mpz_class v) {
+
     if (u == 1) {
         return 1;
     }
@@ -289,4 +265,53 @@ bool ECC::is_on_curve(vector<mpz_class> &P) {
     //        cout << "curve_res P[0]" << P[0] << endl;
     //        cout << "curve_res P[1]" << P[1] << endl;
     return false;
+}
+
+bool ECC::x_is_on_curve(mpz_class &x) {
+    mpz_class t = positive_mod((x * x * x + this->param_a * x * x + this->param_b), this->param_p);
+    // 如果 t^((p - 1) / 2) is 0 or 1，则t是 quadratic residue
+//    t = power_method(t, (this->param_p - 1) / 2, this->param_p);
+
+    mpz_class exp = (this->param_p - 1) / 2;
+    mpz_powm(t.get_mpz_t(), t.get_mpz_t(), exp.get_mpz_t(), this->param_p.get_mpz_t());
+    if (t == 0 | t == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+mpz_class ECC::find_y_give_x(mpz_class &x) {
+    // 得到x之后，计算y，仅适用于 p % 4 = 3的情况, which is the case for secp256k1
+    mpz_class c1 = (this->param_p + 1) / 4;
+    mpz_class t = positive_mod((x * x * x + this->param_a * x * x + this->param_b), this->param_p);
+//    mpz_class y = power_method(t, c1, this->param_p);
+
+
+    mpz_powm(t.get_mpz_t(), t.get_mpz_t(), c1.get_mpz_t(), this->param_p.get_mpz_t());
+    return t;
+}
+
+
+vector<mpz_class> ECC::hash_to_curve(const string &msg) {
+    string hex_string = hash_string->run(msg);
+    mpz_class msg_num_x = mpz_class(hex_string, 16);
+
+//    cout << "hex_string " << hex_string << endl;
+//    cout << "msg_num " << msg_num_x << endl;
+
+    // find x
+    while (!x_is_on_curve(msg_num_x)) {
+        msg_num_x += 1;
+    }
+
+    // find y
+    mpz_class msg_num_y = find_y_give_x(msg_num_x);
+
+    // point
+    vector<mpz_class> msg_point(2);
+    msg_point[0] = msg_num_x;
+    msg_point[1] = msg_num_y;
+
+    return msg_point;
 }

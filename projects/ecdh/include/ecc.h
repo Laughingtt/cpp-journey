@@ -12,6 +12,7 @@
 #include "string"
 #include <cmath>
 #include "vector"
+#include "hash.h"
 
 using namespace std;
 
@@ -32,10 +33,13 @@ private:
     vector<mpz_class> public_key = vector<mpz_class>(2); // point(x,y)
     mpz_class private_key; // 大整数
 
+    HashString *hash_string = new HashString("sha256");
+
 public:
     ECC();
 
     ~ECC() {
+        delete hash_string;
         cout << "======ecc exit======" << endl;
     };
 
@@ -51,28 +55,37 @@ public:
 
     void ecc_add(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R);
 
-    void ecc_sub(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R) {
-        vector<mpz_class> neg_Q = ecc_neg(Q);
-        ecc_add(P, neg_Q, R);
-    }
+    void ecc_sub(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R);
 
     static mpz_class positive_mod(mpz_class numer, mpz_class p);
 
+    // 1 扩展欧几里得算法
     static mpz_class mod_inv(mpz_class u, mpz_class v);
 
-    static void mod_inv(mpz_class u, mpz_class v,mpz_class & n);
+    static void mod_inv(mpz_class u, mpz_class v, mpz_class &n);
 
-    static mpz_class mod_inv2(mpz_class u, mpz_class v);
+    // 2 费马定理小定理/欧拉定理
+    mpz_class mod_inv2(mpz_class u, mpz_class v);
 
+    static void mod_inv2(mpz_class &u, mpz_class &v, mpz_class &n);
+
+    // 3 递推法
     static mpz_class mod_inv3(mpz_class u, mpz_class v);
 
     vector<mpz_class> ecc_neg(vector<mpz_class> &P);
 
     bool is_on_curve(vector<mpz_class> &P);
 
-    static void test_gmp();
+    bool x_is_on_curve(mpz_class &x);
+
+    mpz_class find_y_give_x(mpz_class &x);
+
+    mpz_class power_method(mpz_class a, mpz_class b, mpz_class c);
 
     static void get_random_mpz(mpz_t mpz_r);
+
+    vector<mpz_class> hash_to_curve(const string &msg);
+
 
 };
 

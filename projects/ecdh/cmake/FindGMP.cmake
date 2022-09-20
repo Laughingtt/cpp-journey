@@ -7,7 +7,7 @@ find_library(LIBGMP_LIBRARY
 )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(libGMP  DEFAULT_MSG
+find_package_handle_standard_args(GMP  DEFAULT_MSG
                                   LIBGMP_LIBRARY LIBGMP_INCLUDE_DIR)
 mark_as_advanced(LIBGMP_INCLUDE_DIR LIBGMP_LIBRARY)
 

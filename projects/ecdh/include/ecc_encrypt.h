@@ -2,23 +2,24 @@
 // Created by tian on 2022/9/19.
 //
 
-#ifndef ECDH_ECCENCRYPT_H
-#define ECDH_ECCENCRYPT_H
+#ifndef ECDH_ECC_ENCRYPT_H
+#define ECDH_ECC_ENCRYPT_H
 
 #include "ecc.h"
+#include "hash.h"
 
-class EccEncrypt {
+class ecc_encrypt {
 private:
     ECC *ecc = new ECC();
     vector<mpz_class> public_key = vector<mpz_class>(2);
     mpz_class private_key;
 
 public:
-    EccEncrypt() {
+    ecc_encrypt() {
 
     }
 
-    ~EccEncrypt() {
+    ~ecc_encrypt() {
         delete ecc;
     }
 
@@ -28,10 +29,9 @@ public:
         private_key = ecc->get_private_key();
     }
 
-    vector<mpz_class> encrypt() {
-        vector<mpz_class> msg_point(2);
-        msg_point[0] = "55066263022277343669578718895168534326250603453777594175500187360389116729240";
-        msg_point[1] = "32670510020758816978083085130507043184471273380659243275938904335757337482424";
+    vector<mpz_class> encrypt(const string& msg) {
+
+        vector<mpz_class> msg_point = ecc->hash_to_curve(msg);
 
         mpz_class mpz_r = 3;
 
@@ -72,4 +72,4 @@ public:
 };
 
 
-#endif //ECDH_ECCENCRYPT_H
+#endif //ECDH_ECC_ENCRYPT_H
