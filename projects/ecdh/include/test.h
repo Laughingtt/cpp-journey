@@ -198,6 +198,11 @@ public:
 //        // p2 get secret_key_list
         string secret_key = ecc_ot_receiver.receiver_compute_secret_key(public_key_str);
 
+        if (secret_key == secret_key_list[choice]) {
+            cout << "ot accuracy success =========" << endl;
+            return;
+        }
+
         for (int i = 0; i < msg_length; ++i) {
             cout << "secret_key_list[choice] :" << i << " " << secret_key_list[i] << endl;
         }

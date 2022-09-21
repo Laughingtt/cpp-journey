@@ -126,7 +126,7 @@ void ECC::ecc_add(vector<mpz_class> &P,vector<mpz_class> &Q, vector<mpz_class> &
         m = (3 * x1 * x1 + this->param_a) * mod_inv_number;
 //        m = (3 * x1 * x1 + this->param_a) * mod_inv2(2 * y1, this->param_p);
     } else {
-        mpz_class x2_x1;
+        mpz_class x2_x1 = x2 - x1;
         mod_inv2(x2_x1, this->param_p, mod_inv_number);
         m = (y2 - y1) * mod_inv_number;
 //        m = (y2 - y1) * mod_inv2(x2 - x1, this->param_p);
