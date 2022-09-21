@@ -19,14 +19,14 @@ R 方只能对其中一个密文解密。
 */
 class EccObliviousTransfer {
 private:
-    void mpz_to_string(vector<mpz_class> &vec1, vector<string> &vec2) {
+    static void mpz_to_string(vector<mpz_class> &vec1, vector<string> &vec2) {
         for (int i = 0; i < vec1.size(); ++i) {
             string tmp = vec1[i].get_str();
             vec2[i] = tmp;
         }
     }
 
-    void string_to_mpz(vector<string> &vec1, vector<mpz_class> &vec2) {
+    static void string_to_mpz(vector<string> &vec1, vector<mpz_class> &vec2) {
         for (int i = 0; i < vec1.size(); ++i) {
             string tmp = vec1[i];
             vec2[i] = tmp;
@@ -44,12 +44,7 @@ public:
         delete ecc;
     }
 
-    vector<string> get_public_key() {
-        vector<mpz_class> public_key = ecc->get_public_key();
-        vector<string> public_key_str(2);
-        mpz_to_string(public_key, public_key_str);
-        return public_key_str;
-    }
+    vector<string> get_public_key();
 
     /*!
      * R 方生成私钥b, 计算得到公钥 B=b∙G
@@ -59,18 +54,7 @@ public:
      * @param i 接受选择的消息index
      * @return vector<string> 计算得出的k 值
      */
-    vector<string> receiver_compute_k(vector<string> A_public_key, unsigned int i) {
-
-        vector<mpz_class> A_public_key_vec(2);
-        string_to_mpz(A_public_key, A_public_key_vec);
-
-        ecc->ecc_mul(A_public_key_vec, i, A_public_key_vec);
-        vector<mpz_class> B_public_key = ecc->get_public_key();
-        ecc->ecc_add(A_public_key_vec, B_public_key, A_public_key_vec);
-
-        mpz_to_string(A_public_key_vec, A_public_key);
-        return A_public_key;
-    }
+    vector<string> receiver_compute_k(vector<string> A_public_key, unsigned int i);
 
     /*!
      *  secret_key = a * B = b * A = a * b * G
@@ -78,14 +62,7 @@ public:
      * @param A_public_key 发送方生成公钥
      * @return 最终需要加密密钥值
      */
-    string receiver_compute_secret_key(vector<string> &A_public_key) {
-        vector<mpz_class> A_public_key_vec(2);
-        string_to_mpz(A_public_key, A_public_key_vec);
-
-        ecc->ecc_mul(A_public_key_vec, ecc->get_private_key(), A_public_key_vec);
-        string secret_key = A_public_key_vec[0].get_str();
-        return secret_key;
-    }
+    string receiver_compute_secret_key(vector<string> &A_public_key);
 
 
     /*!
@@ -95,14 +72,7 @@ public:
      *
      *
      */
-    vector<string> sender_compute_secret_list(vector<string> receiver_k, unsigned int msg_length) {
-        vector<string> secret_key_list(msg_length);
-        for (int j = 0; j < msg_length; ++j) {
-            string secret_key = sender_compute_secret_key(receiver_k, j);
-            secret_key_list[j] = secret_key;
-        }
-        return secret_key_list;
-    }
+    vector<string> sender_compute_secret_list(vector<string> receiver_k, unsigned int msg_length);
 
     /*!
      * 计算全新的密钥 K_j=a∙K−j∙a∙A
@@ -110,22 +80,7 @@ public:
      * @param i
      * @return
      */
-    string sender_compute_secret_key(vector<string> &B_random_k, unsigned int i) {
-        vector<mpz_class> B_random_k_vec(2);
-        string_to_mpz(B_random_k, B_random_k_vec);
-
-        // a * k
-        ecc->ecc_mul(B_random_k_vec, ecc->get_private_key(), B_random_k_vec);
-
-        vector<mpz_class> A_public_key = ecc->get_public_key();
-        ecc->ecc_mul(A_public_key, ecc->get_private_key(), A_public_key);
-        ecc->ecc_mul(A_public_key, i, A_public_key);
-
-        ecc->ecc_sub(B_random_k_vec, A_public_key, A_public_key);
-
-        return A_public_key[0].get_str();
-
-    }
+    string sender_compute_secret_key(vector<string> &B_random_k, unsigned int i);
 
 };
 

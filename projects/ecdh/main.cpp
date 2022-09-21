@@ -14,10 +14,9 @@ int main(int argc, char const *argv[]) {
 //    test.test_ecc_mul();
 //    test.test_get_key();
 //    test.test_key_exchange();
-//    test.test_encrypt();
+    test.test_encrypt();
 //    test.test_hash_curve();
-    test.test_ot();
-
+//    test.test_ot();
 
     return 0;
 }
