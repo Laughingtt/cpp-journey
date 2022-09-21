@@ -10,6 +10,7 @@
 #include "ecc_encrypt.h"
 #include "ctime"
 #include "hash.h"
+#include "ecc_oblivious_transfer.h"
 
 class Test {
 private:
@@ -138,7 +139,7 @@ public:
     }
 
     void test_encrypt() {
-        ecc_encrypt ecc_encrypt;
+        EccEncrypt ecc_encrypt;
         ecc_encrypt.generate_key();
         vector<mpz_class> enc_msg = ecc_encrypt.encrypt("hello");
         ecc_encrypt.decrypt(enc_msg);
@@ -177,7 +178,31 @@ public:
             cout << "hello point [0] " << msg_point[0] << endl;
             cout << "hello point [1] " << msg_point[1] << endl;
         }
+    }
 
+    void test_ot() {
+        EccObliviousTransfer ecc_ot_sender = EccObliviousTransfer();
+        EccObliviousTransfer ecc_ot_receiver = EccObliviousTransfer();
+
+        unsigned int msg_length = 5;
+        unsigned int choice = 3;
+
+        vector<string> public_key_str = ecc_ot_sender.get_public_key();
+//
+//        // p1 send pubk to rec and p2 compute k
+        vector<string> B_random_k = ecc_ot_receiver.receiver_compute_k(public_key_str, choice);
+//
+//        // p2 -> p1 B_random_k and get p1 secret_key_list
+        vector<string> secret_key_list = ecc_ot_sender.sender_compute_secret_list(B_random_k, msg_length);
+//
+//        // p2 get secret_key_list
+        string secret_key = ecc_ot_receiver.receiver_compute_secret_key(public_key_str);
+
+        for (int i = 0; i < msg_length; ++i) {
+            cout << "secret_key_list[choice] :" << i << " " << secret_key_list[i] << endl;
+        }
+
+        cout << "secret_key :choice " << choice << " " << secret_key << endl;
     }
 
 };

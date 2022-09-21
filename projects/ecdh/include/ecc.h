@@ -86,7 +86,6 @@ public:
 
     vector<mpz_class> hash_to_curve(const string &msg);
 
-
 };
 
 

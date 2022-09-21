@@ -22,7 +22,7 @@ public:
 
 class HashMd5 : public Hash {
 public:
-    virtual string hash(const string &str) {
+    string hash(const string &str) override {
         char buf[2];
         unsigned char hash[MD5_DIGEST_LENGTH];
         MD5_CTX md5;
@@ -40,7 +40,7 @@ public:
 
 class HashSha256 : public Hash {
 public:
-    virtual string hash(const string &str) {
+    string hash(const string &str) override {
         char buf[2];
         unsigned char hash[SHA256_DIGEST_LENGTH];
         SHA256_CTX sha256;
@@ -58,7 +58,7 @@ public:
 
 class HashSha512 : public Hash {
 public:
-    virtual string hash(const string &str) {
+    string hash(const string &str) override {
         char buf[2];
         unsigned char hash[SHA512_DIGEST_LENGTH];
         SHA512_CTX sha512;

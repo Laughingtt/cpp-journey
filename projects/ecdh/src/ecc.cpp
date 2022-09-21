@@ -20,12 +20,6 @@ void ECC::get_random_mpz(mpz_t mpz_r) {
 }
 
 vector<mpz_class> ECC::get_public_key() {
-    //        vector<mpz_class> pub_vec(2);
-    //        pub_vec[0] = this->public_key[0];
-    //        pub_vec[1] = this->public_key[1];
-    //        cout << "get_public_key[0] " << pub_vec[0] << endl;
-    //        cout << "get_public_key[1] " << pub_vec[1] << endl;
-
     return this->public_key;
 }
 
@@ -105,7 +99,7 @@ void ECC::ecc_mul(vector<mpz_class> &P, mpz_class k, vector<mpz_class> &R) {
 
 }
 
-void ECC::ecc_add(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R) {
+void ECC::ecc_add(vector<mpz_class> &P,vector<mpz_class> &Q, vector<mpz_class> &R) {
     if (P[0] == 0 && P[1] == 0) {
         R[0] = Q[0];
         R[1] = Q[1];
@@ -291,7 +285,6 @@ mpz_class ECC::find_y_give_x(mpz_class &x) {
     mpz_powm(t.get_mpz_t(), t.get_mpz_t(), c1.get_mpz_t(), this->param_p.get_mpz_t());
     return t;
 }
-
 
 vector<mpz_class> ECC::hash_to_curve(const string &msg) {
     string hex_string = hash_string->run(msg);

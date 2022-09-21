@@ -8,18 +8,19 @@
 #include "ecc.h"
 #include "hash.h"
 
-class ecc_encrypt {
+class EccEncrypt {
 private:
-    ECC *ecc = new ECC();
     vector<mpz_class> public_key = vector<mpz_class>(2);
     mpz_class private_key;
 
 public:
-    ecc_encrypt() {
+    ECC *ecc = new ECC();
+
+    EccEncrypt() {
 
     }
 
-    ~ecc_encrypt() {
+    ~EccEncrypt() {
         delete ecc;
     }
 
@@ -29,7 +30,7 @@ public:
         private_key = ecc->get_private_key();
     }
 
-    vector<mpz_class> encrypt(const string& msg) {
+    vector<mpz_class> encrypt(const string &msg) {
 
         vector<mpz_class> msg_point = ecc->hash_to_curve(msg);
 
