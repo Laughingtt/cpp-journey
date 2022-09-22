@@ -1,5 +1,6 @@
 #include "iostream"
 #include "test.h"
+#include "test_gmp.h"
 
 using namespace std;
 
@@ -17,6 +18,9 @@ int main(int argc, char const *argv[]) {
     test.test_encrypt();
 //    test.test_hash_curve();
 //    test.test_ot();
+
+//    TestGmp tgmp;
+//    tgmp.test_gmp();
 
     return 0;
 }

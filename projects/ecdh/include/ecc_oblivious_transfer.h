@@ -18,21 +18,6 @@ S 方计算n个秘钥 K_j=a∙K−j∙a∙A，并对n个消息进行加密，将
 R 方只能对其中一个密文解密。
 */
 class EccObliviousTransfer {
-private:
-    static void mpz_to_string(vector<mpz_class> &vec1, vector<string> &vec2) {
-        for (int i = 0; i < vec1.size(); ++i) {
-            string tmp = vec1[i].get_str();
-            vec2[i] = tmp;
-        }
-    }
-
-    static void string_to_mpz(vector<string> &vec1, vector<mpz_class> &vec2) {
-        for (int i = 0; i < vec1.size(); ++i) {
-            string tmp = vec1[i];
-            vec2[i] = tmp;
-        }
-    }
-
 public:
     ECC *ecc = new ECC();
 

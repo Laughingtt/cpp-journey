@@ -26,9 +26,9 @@ public:
 
     void generate_key();
 
-    vector<mpz_class> encrypt(const string &msg);
+    vector<string> encrypt(const string &msg);
 
-    void decrypt(vector<mpz_class> &enc_v);
+    string decrypt(const vector<string> &enc_v);
 };
 
 

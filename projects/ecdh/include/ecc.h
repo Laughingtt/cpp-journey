@@ -33,9 +33,10 @@ private:
     vector<mpz_class> public_key = vector<mpz_class>(2); // point(x,y)
     mpz_class private_key; // 大整数
 
-    HashString *hash_string = new HashString("sha256");
 
 public:
+    HashString *hash_string = new HashString("sha256");
+
     ECC();
 
     ~ECC() {
@@ -51,13 +52,27 @@ public:
 
     void generate_point(mpz_class sk = 0);
 
-    void ecc_mul(vector<mpz_class> &P, mpz_class k, vector<mpz_class> &R);
+    void ecc_mul(const vector<mpz_class> &P, const mpz_class &k, vector<mpz_class> &R);
 
-    void ecc_add(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R);
+    void ecc_add(const vector<mpz_class> &P, const vector<mpz_class> &Q, vector<mpz_class> &R);
 
-    void ecc_sub(vector<mpz_class> &P, vector<mpz_class> &Q, vector<mpz_class> &R);
+    void ecc_sub(const vector<mpz_class> &P, const vector<mpz_class> &Q, vector<mpz_class> &R);
 
-    static mpz_class positive_mod(mpz_class numer, mpz_class p);
+    vector<mpz_class> ecc_neg(const vector<mpz_class> &P);
+
+    bool is_on_curve(const vector<mpz_class> &P);
+
+    bool x_is_on_curve(const mpz_class &x);
+
+    mpz_class find_y_give_x(const mpz_class &x);
+
+    static void get_random_mpz(mpz_t mpz_r);
+
+    vector<mpz_class> hash_to_curve(const string &msg);
+
+    static mpz_class positive_mod(mpz_class &numer, mpz_class &p);
+
+    mpz_class power_method(mpz_class a, mpz_class b, mpz_class c);
 
     // 1 扩展欧几里得算法
     static mpz_class mod_inv(mpz_class u, mpz_class v);
@@ -67,24 +82,14 @@ public:
     // 2 费马定理小定理/欧拉定理
     mpz_class mod_inv2(mpz_class u, mpz_class v);
 
-    static void mod_inv2(mpz_class &u, mpz_class &v, mpz_class &n);
+    static void mod_inv2(const mpz_class &u, const mpz_class &v, mpz_class &n);
 
     // 3 递推法
     static mpz_class mod_inv3(mpz_class u, mpz_class v);
 
-    vector<mpz_class> ecc_neg(vector<mpz_class> &P);
+    static void mpz_to_string(vector<mpz_class> &vec1, vector<string> &vec2);
 
-    bool is_on_curve(vector<mpz_class> &P);
-
-    bool x_is_on_curve(mpz_class &x);
-
-    mpz_class find_y_give_x(mpz_class &x);
-
-    mpz_class power_method(mpz_class a, mpz_class b, mpz_class c);
-
-    static void get_random_mpz(mpz_t mpz_r);
-
-    vector<mpz_class> hash_to_curve(const string &msg);
+    static void string_to_mpz(vector<string> &vec1, vector<mpz_class> &vec2);
 
 };
 

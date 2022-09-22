@@ -117,8 +117,9 @@ void Test::test_key_exchange() {
 void Test::test_encrypt() {
     EccEncrypt ecc_encrypt;
     ecc_encrypt.generate_key();
-    vector<mpz_class> enc_msg = ecc_encrypt.encrypt("hello");
-    ecc_encrypt.decrypt(enc_msg);
+    vector<string> enc_msg = ecc_encrypt.encrypt("hello");
+    string dec_res = ecc_encrypt.decrypt(enc_msg);
+    cout << "dec_res :" << dec_res << endl;
 
     clock_t start = clock();
     for (int i = 0; i < 10000; ++i) {

@@ -9,6 +9,7 @@
 #include "gmpxx.h"
 
 class TestGmp {
+public:
     static void test_gmp() {
         mpz_t a, b, c;
 
@@ -49,7 +50,15 @@ class TestGmp {
         ff = y * y - x * x * x - e * x;
         cout << "mpz class sum is :  " << ff << "\n";
 
+        mpz_class r, n, d;
+        n = "-11291920192";
+        d = "363634";
+        mpz_mod(r.get_mpz_t(), n.get_mpz_t(), d.get_mpz_t());
+        cout << "mpz_mod(r,n,d) " << r << endl;
+        cout << "n%d" << n%d << endl;
+
+
     }
-}
+};
 
 #endif //ECDH_TEST_GMP_H
