@@ -19,9 +19,10 @@ using namespace std;
 
 class ECC {
 private:
-    string name = "secp256k1";
-    mpz_class param_a = 0;
-    mpz_class param_b = 7;
+    string curve_name="k1";
+    string name;
+    mpz_class param_a;
+    mpz_class param_b;
     mpz_class param_p;
     // base point
     vector<mpz_class> param_G = vector<mpz_class>(2);
@@ -65,6 +66,8 @@ public:
     bool x_is_on_curve(const mpz_class &x);
 
     mpz_class find_y_give_x(const mpz_class &x);
+
+    void find_x_y_point(mpz_class &x, mpz_class &y);
 
     static void get_random_mpz(mpz_t mpz_r);
 

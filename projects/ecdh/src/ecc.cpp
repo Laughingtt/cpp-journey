@@ -4,6 +4,38 @@
 
 #include "ecc.h"
 
+ECC::ECC() {
+    // set mpz value
+    if (curve_name == "k1") {
+        name = "secp256k1";
+        param_a = 0;
+        param_b = 7;
+        param_p = "115792089237316195423570985008687907853269984665640564039457584007908834671663";
+        param_G[0] = "55066263022277343669578718895168534326250603453777594175500187360389116729240";
+        param_G[1] = "32670510020758816978083085130507043184471273380659243275938904335757337482424";
+        param_n = "115792089237316195423570985008687907852837564279074904382605163141518161494337";
+    } else if (curve_name == "v1") {
+        name = "prime256v1";
+        param_a = "115792089210356248762697446949407573530086143415290314195533631308867097853948";
+        param_b = "41058363725152142129326129780047268409114441015993725554835256314039467401291";
+        param_p = "115792089210356248762697446949407573530086143415290314195533631308867097853951";
+        param_G[0] = "48439561293906451759052585252797914202762949526041747995844080717082404635286";
+        param_G[1] = "36134250956749795798585127919587881956611106672985015071877198253568414405109";
+        param_n = "115792089210356248762697446949407573529996955224135760342422259061068512044369";
+    }
+
+    cout << "======ecc" << this->name << "init param is :======" << endl;
+    cout << "param_a : " << param_a << endl;
+    cout << "param_b : " << param_b << endl;
+    cout << "param_p : " << param_p << endl;
+    cout << "param_G[0] : " << param_G[0] << endl;
+    cout << "param_G[1] : " << param_G[1] << endl;
+    cout << "param_n : " << param_n << endl;
+    cout << "param_h : " << param_h << endl;
+    cout << "==================================================" << endl;
+
+}
+
 void ECC::get_random_mpz(mpz_t mpz_r) {
     clock_t time = clock();
     gmp_randstate_t random_state;
@@ -51,26 +83,7 @@ void ECC::generate_point(mpz_class sk) {
 
 }
 
-ECC::ECC() {
-    // set mpz value
-    param_p = "115792089237316195423570985008687907853269984665640564039457584007908834671663";
-    param_G[0] = "55066263022277343669578718895168534326250603453777594175500187360389116729240";
-    param_G[1] = "32670510020758816978083085130507043184471273380659243275938904335757337482424";
-    param_n = "115792089237316195423570985008687907852837564279074904382605163141518161494337";
-
-    cout << "======ecc" << this->name << "init param is :======" << endl;
-    cout << "param_a : " << param_a << endl;
-    cout << "param_b : " << param_b << endl;
-    cout << "param_p : " << param_p << endl;
-    cout << "param_G[0] : " << param_G[0] << endl;
-    cout << "param_G[1] : " << param_G[1] << endl;
-    cout << "param_n : " << param_n << endl;
-    cout << "param_h : " << param_h << endl;
-    cout << "==================================================" << endl;
-
-}
-
-void ECC::ecc_mul(const vector<mpz_class> &P,const mpz_class &k, vector<mpz_class> &R) {
+void ECC::ecc_mul(const vector<mpz_class> &P, const mpz_class &k, vector<mpz_class> &R) {
     // R = k * P
     mpz_class mod_value;
     mpz_mod(mod_value.get_mpz_t(), k.get_mpz_t(), this->param_n.get_mpz_t());
@@ -92,12 +105,12 @@ void ECC::ecc_mul(const vector<mpz_class> &P,const mpz_class &k, vector<mpz_clas
     Q_tmp[0] = P[0];
     Q_tmp[1] = P[1];
     while (tem_k > 0) {
-        mpz_mod(mod_value.get_mpz_t(), k.get_mpz_t(), two.get_mpz_t());
+        mpz_mod(mod_value.get_mpz_t(), tem_k.get_mpz_t(), two.get_mpz_t());
         if (mod_value == 1) {
             ecc_add(Q, Q_tmp, Q);
         }
         ecc_add(Q_tmp, Q_tmp, Q_tmp);
-        //            cout << "k  " << k << "  Q_tmp " << Q_tmp[0] << "  " << Q_tmp[1] << endl;
+//        cout << "k  " << k << "  Q_tmp " << Q_tmp[0] << "  " << Q_tmp[1] << endl;
         tem_k = tem_k / two;
     }
     R[0] = Q[0];
@@ -105,7 +118,16 @@ void ECC::ecc_mul(const vector<mpz_class> &P,const mpz_class &k, vector<mpz_clas
 
 }
 
-void ECC::ecc_add(const vector<mpz_class> &P,const vector<mpz_class> &Q, vector<mpz_class> &R) {
+/*！
+ *  P(x1,y1) Q(x2,y2)
+ *  P+Q
+ *  m = (y2-y1)/(x2-x1)     (x1 != x2)
+ *  m = (3 * x1^2 + a)/2 y1  (x1 ==x2)
+ *
+ *  x3 = m^2 - x1 - x2
+ *  y3 = m(x1-x2)-y1
+ */
+void ECC::ecc_add(const vector<mpz_class> &P, const vector<mpz_class> &Q, vector<mpz_class> &R) {
     if (P[0] == 0 && P[1] == 0) {
         R[0] = Q[0];
         R[1] = Q[1];
@@ -116,8 +138,8 @@ void ECC::ecc_add(const vector<mpz_class> &P,const vector<mpz_class> &Q, vector<
         R[1] = P[1];
         return;
     }
-//    is_on_curve(P);
-//    is_on_curve(Q);
+    is_on_curve(P);
+    is_on_curve(Q);
 
     mpz_class x1 = P[0];
     mpz_class y1 = P[1];
@@ -144,7 +166,7 @@ void ECC::ecc_add(const vector<mpz_class> &P,const vector<mpz_class> &Q, vector<
 
 }
 
-void ECC::ecc_sub(const vector<mpz_class> &P,const vector<mpz_class> &Q, vector<mpz_class> &R) {
+void ECC::ecc_sub(const vector<mpz_class> &P, const vector<mpz_class> &Q, vector<mpz_class> &R) {
     vector<mpz_class> neg_Q = ecc_neg(Q);
     ecc_add(P, neg_Q, R);
 }
@@ -222,7 +244,7 @@ mpz_class ECC::mod_inv2(mpz_class u, mpz_class v) {
     return pow_num;
 }
 
-void ECC::mod_inv2(const mpz_class &u,const mpz_class &v, mpz_class &n) {
+void ECC::mod_inv2(const mpz_class &u, const mpz_class &v, mpz_class &n) {
 
     mpz_class v_2 = v - 2;
     mpz_powm(n.get_mpz_t(), u.get_mpz_t(), v_2.get_mpz_t(), v.get_mpz_t());
@@ -255,10 +277,10 @@ bool ECC::is_on_curve(const vector<mpz_class> &P) {
     mpz_class x = P[0];
     mpz_class y = P[1];
     mpz_class curve_res;
-    mpz_class cal_res = (y * y - x * x * x - this->param_b);
+    mpz_class cal_res = (y * y - x * x * x - this->param_a * x - this->param_b);
     mpz_mod(curve_res.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
 
-    //        cout << "curve_res  " << curve_res << endl;
+//    cout << "curve_res  " << curve_res << endl;
     if (curve_res == 0) {
         return true;
     }
@@ -296,6 +318,24 @@ mpz_class ECC::find_y_give_x(const mpz_class &x) {
     return t;
 }
 
+void ECC::find_x_y_point(mpz_class &x, mpz_class &y) {
+    mpz_class stop_t = -1;
+    mpz_class t = -1;
+    while (true) {
+        mpz_class cal_res = x * x * x + this->param_a * x * x + this->param_b;
+        mpz_mod(t.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
+        mpz_class exp = (this->param_p - 1) / 2;
+        mpz_powm(stop_t.get_mpz_t(), t.get_mpz_t(), exp.get_mpz_t(), this->param_p.get_mpz_t());
+        if (stop_t == 0 | stop_t == 1) {
+            break;
+        }
+        x += 1;
+    }
+    mpz_class c1 = (this->param_p + 1) / 4;
+    mpz_powm(t.get_mpz_t(), t.get_mpz_t(), c1.get_mpz_t(), this->param_p.get_mpz_t());
+    y = t;
+}
+
 vector<mpz_class> ECC::hash_to_curve(const string &msg) {
     string hex_string = hash_string->run(msg);
     mpz_class msg_num_x = mpz_class(hex_string, 16);
@@ -304,12 +344,15 @@ vector<mpz_class> ECC::hash_to_curve(const string &msg) {
 //    cout << "msg_num " << msg_num_x << endl;
 
     // find x
-    while (!x_is_on_curve(msg_num_x)) {
-        msg_num_x += 1;
-    }
+//    while (!x_is_on_curve(msg_num_x)) {
+//        msg_num_x += 1;
+//    }
+//    // find y
+//    mpz_class msg_num_y = find_y_give_x(msg_num_x);
 
-    // find y
-    mpz_class msg_num_y = find_y_give_x(msg_num_x);
+    // find x,y
+    mpz_class msg_num_y;
+    find_x_y_point(msg_num_x, msg_num_y);
 
     // point
     vector<mpz_class> msg_point(2);

@@ -35,6 +35,7 @@ public:
     void test_ecc_mul();
 
     void test_ecc_add();
+    void test_ecc_add2();
 
     void test_ecc_sub();
 
