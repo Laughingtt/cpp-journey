@@ -138,8 +138,8 @@ void ECC::ecc_add(const vector<mpz_class> &P, const vector<mpz_class> &Q, vector
         R[1] = P[1];
         return;
     }
-    is_on_curve(P);
-    is_on_curve(Q);
+//    is_on_curve(P);
+//    is_on_curve(Q);
 
     mpz_class x1 = P[0];
     mpz_class y1 = P[1];
@@ -280,7 +280,7 @@ bool ECC::is_on_curve(const vector<mpz_class> &P) {
     mpz_class cal_res = (y * y - x * x * x - this->param_a * x - this->param_b);
     mpz_mod(curve_res.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
 
-//    cout << "curve_res  " << curve_res << endl;
+    cout << "curve_res  " << curve_res << endl;
     if (curve_res == 0) {
         return true;
     }
@@ -291,7 +291,7 @@ bool ECC::is_on_curve(const vector<mpz_class> &P) {
 
 bool ECC::x_is_on_curve(const mpz_class &x) {
     mpz_class t;
-    mpz_class cal_res = x * x * x + this->param_a * x * x + this->param_b;
+    mpz_class cal_res = x * x * x + this->param_a * x  + this->param_b;
     mpz_mod(t.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
 
     // 如果 t^((p - 1) / 2) is 0 or 1，则t是 quadratic residue
@@ -309,7 +309,7 @@ bool ECC::x_is_on_curve(const mpz_class &x) {
 mpz_class ECC::find_y_give_x(const mpz_class &x) {
     // 得到x之后，计算y，仅适用于 p % 4 = 3的情况, which is the case for secp256k1
     mpz_class t;
-    mpz_class cal_res = x * x * x + this->param_a * x * x + this->param_b;
+    mpz_class cal_res = x * x * x + this->param_a * x + this->param_b;
     mpz_class c1 = (this->param_p + 1) / 4;
     mpz_mod(t.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
 //    mpz_class y = power_method(t, c1, this->param_p);
@@ -322,7 +322,7 @@ void ECC::find_x_y_point(mpz_class &x, mpz_class &y) {
     mpz_class stop_t = -1;
     mpz_class t = -1;
     while (true) {
-        mpz_class cal_res = x * x * x + this->param_a * x * x + this->param_b;
+        mpz_class cal_res = x * x * x + this->param_a * x + this->param_b;
         mpz_mod(t.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
         mpz_class exp = (this->param_p - 1) / 2;
         mpz_powm(stop_t.get_mpz_t(), t.get_mpz_t(), exp.get_mpz_t(), this->param_p.get_mpz_t());
