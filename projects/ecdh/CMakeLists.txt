@@ -6,7 +6,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall")
 option(BUILD_TESTS "Set to ON to build tests" ON)
 
 
-
 add_compile_options(-fPIC)
 
 # find dependencies
@@ -31,6 +30,17 @@ link_libraries(${OPENSSL_LIBRARIES})
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
 
+# add pybind11
+add_subdirectory(extern/pybind11)
+pybind11_add_module(_ecdh_lib python/cpp/pybind.cpp)
+
+# add src
+add_library(_ecc_src ${SRC})
+target_link_libraries(_ecc_src ${LIBGMP_LIBRARIES}
+        ${LIBGMPXX_LIBRARIES}
+        ${OPENSSL_LIBRARIES})
+
+target_link_libraries(_ecdh_lib PRIVATE _ecc_src)
 
 # add exec
 add_executable(main ${PROJECT_SOURCE_DIR}/main.cpp "${SRC}")

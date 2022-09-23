@@ -15,6 +15,10 @@ using namespace std;
 
 class Hash {
 public:
+    ~Hash() {
+
+    }
+
     virtual string hash(const string &str);
 };
 
@@ -37,7 +41,9 @@ public:
 class HashString {
     Hash *hash = new Hash;
 public:
-    HashString(const string &method);
+    explicit HashString(const string &method);
+
+    HashString();;
 
     ~HashString() {
         delete hash;

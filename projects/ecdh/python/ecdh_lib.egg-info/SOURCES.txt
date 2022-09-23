@@ -1,0 +1,7 @@
+setup.cfg
+setup.py
+python/ecdh_lib.egg-info/PKG-INFO
+python/ecdh_lib.egg-info/SOURCES.txt
+python/ecdh_lib.egg-info/dependency_links.txt
+python/ecdh_lib.egg-info/not-zip-safe
+python/ecdh_lib.egg-info/top_level.txt

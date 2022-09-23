@@ -62,6 +62,10 @@ HashString::HashString(const string &method) {
     }
 }
 
+HashString::HashString() {
+    this->hash = &*new HashSha256;
+}
+
 string HashString::run(const string &s) {
     return this->hash->hash(s);
 }
