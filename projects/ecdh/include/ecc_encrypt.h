@@ -14,10 +14,14 @@ private:
     mpz_class private_key;
 
 public:
-    ECC *ecc = new ECC();
+    ECC *ecc;
 
     EccEncrypt() {
+        ecc = new ECC();
+    }
 
+    EccEncrypt(const string& curve_name) {
+        ecc = new ECC(curve_name);
     }
 
     ~EccEncrypt() {

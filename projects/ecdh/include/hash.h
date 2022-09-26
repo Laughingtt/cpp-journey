@@ -41,7 +41,7 @@ class HashString {
 public:
     explicit HashString(const string &method);
 
-    HashString();;
+    HashString();
 
     ~HashString() {
         delete hash;

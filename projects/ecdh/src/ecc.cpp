@@ -4,26 +4,59 @@
 
 #include "ecc.h"
 
-ECC::ECC() {
+void ECC::set_curve_value() {
     // set mpz value
-    if (curve_name == "k1") {
+    if (curve_name == "secp256k1") {
         name = "secp256k1";
+        hex_len = 256 / 4;
         param_a = 0;
         param_b = 7;
         param_p = "115792089237316195423570985008687907853269984665640564039457584007908834671663";
         param_G[0] = "55066263022277343669578718895168534326250603453777594175500187360389116729240";
         param_G[1] = "32670510020758816978083085130507043184471273380659243275938904335757337482424";
         param_n = "115792089237316195423570985008687907852837564279074904382605163141518161494337";
-    } else if (curve_name == "v1") {
+    } else if (curve_name == "prime256v1") {
         name = "prime256v1";
+        hex_len = 256 / 4;
         param_a = "115792089210356248762697446949407573530086143415290314195533631308867097853948";
         param_b = "41058363725152142129326129780047268409114441015993725554835256314039467401291";
         param_p = "115792089210356248762697446949407573530086143415290314195533631308867097853951";
         param_G[0] = "48439561293906451759052585252797914202762949526041747995844080717082404635286";
         param_G[1] = "36134250956749795798585127919587881956611106672985015071877198253568414405109";
         param_n = "115792089210356248762697446949407573529996955224135760342422259061068512044369";
+    } else if (curve_name == "prime192v1") {
+        name = "prime192v1";
+        hex_len = 192 / 4;
+        param_a = "6277101735386680763835789423207666416083908700390324961276";
+        param_b = "2455155546008943817740293915197451784769108058161191238065";
+        param_p = "6277101735386680763835789423207666416083908700390324961279";
+        param_G[0] = "602046282375688656758213480587526111916698976636884684818";
+        param_G[1] = "174050332293622031404857552280219410364023488927386650641";
+        param_n = "6277101735386680763835789423176059013767194773182842284081";
+    } else if (curve_name == "secp160k1") {
+        name = "secp160k1";
+        hex_len = 160 / 4;
+        param_a = 0;
+        param_b = 7;
+        param_p = "1461501637330902918203684832716283019651637554291";
+        param_G[0] = "338530205676502674729549372677647997389429898939";
+        param_G[1] = "842365456698940303598009444920994870805149798382";
+        param_n = "1461501637330902918203686915170869725397159163571";
+    } else if (curve_name == "secp128r1") {
+        name = "secp128r1";
+        hex_len = 128 / 4;
+        param_a = "340282366762482138434845932244680310780";
+        param_b = "308990863222245658030922601041482374867";
+        param_p = "340282366762482138434845932244680310783";
+        param_G[0] = "29408993404948928992877151431649155974";
+        param_G[1] = "275621562871047521857442314737465260675";
+        param_n = "340282366762482138443322565580356624661";
+    }else{
+        throw "Stop is curve_name error";
     }
+}
 
+void ECC::view_param() {
     cout << "======ecc" << this->name << "init param is :======" << endl;
     cout << "param_a : " << param_a << endl;
     cout << "param_b : " << param_b << endl;
@@ -33,7 +66,18 @@ ECC::ECC() {
     cout << "param_n : " << param_n << endl;
     cout << "param_h : " << param_h << endl;
     cout << "==================================================" << endl;
+}
 
+ECC::ECC(const string &_curve_name) {
+    this->curve_name = _curve_name;
+    set_curve_value();
+    view_param();
+}
+
+ECC::ECC() {
+    curve_name = "secp128r1";
+    set_curve_value();
+    view_param();
 }
 
 void ECC::get_random_mpz(mpz_t mpz_r) {
@@ -291,7 +335,7 @@ bool ECC::is_on_curve(const vector<mpz_class> &P) {
 
 bool ECC::x_is_on_curve(const mpz_class &x) {
     mpz_class t;
-    mpz_class cal_res = x * x * x + this->param_a * x  + this->param_b;
+    mpz_class cal_res = x * x * x + this->param_a * x + this->param_b;
     mpz_mod(t.get_mpz_t(), cal_res.get_mpz_t(), this->param_p.get_mpz_t());
 
     // 如果 t^((p - 1) / 2) is 0 or 1，则t是 quadratic residue
@@ -338,6 +382,7 @@ void ECC::find_x_y_point(mpz_class &x, mpz_class &y) {
 
 vector<mpz_class> ECC::hash_to_curve(const string &msg) {
     string hex_string = hash_string->run(msg);
+    hex_string = hex_string.substr(0, hex_len);
     mpz_class msg_num_x = mpz_class(hex_string, 16);
 
 //    cout << "hex_string " << hex_string << endl;

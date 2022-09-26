@@ -19,8 +19,9 @@ using namespace std;
 
 class ECC {
 private:
-    string curve_name="k1";
+    string curve_name = "secp128r1";
     string name;
+    int hex_len{};
     mpz_class param_a;
     mpz_class param_b;
     mpz_class param_p;
@@ -34,9 +35,13 @@ private:
     vector<mpz_class> public_key = vector<mpz_class>(2); // point(x,y)
     mpz_class private_key; // 大整数
 
+    void view_param();
+
 
 public:
     HashString *hash_string = new HashString("sha256");
+
+    ECC(const string &_curve_name);
 
     ECC();
 
@@ -44,6 +49,8 @@ public:
         delete hash_string;
         cout << "======ecc exit======" << endl;
     };
+
+    void set_curve_value();
 
     vector<mpz_class> get_public_key();
 

@@ -145,6 +145,17 @@ void Test::test_encrypt() {
 
 }
 
+void Test::test_name_encrypt() {
+    EccEncrypt ecc_encrypt("secp160k1");
+    clock_t start = clock();
+    for (int i = 0; i < 10000; ++i) {
+        ecc_encrypt.encrypt("hello");
+    }
+    clock_t end = clock();
+    cout << "programTimes is :" << ((double) end - start) / CLOCKS_PER_SEC << endl;
+
+}
+
 void Test::test_hash() {
     HashString hash_string("md5");
     clock_t start = clock();

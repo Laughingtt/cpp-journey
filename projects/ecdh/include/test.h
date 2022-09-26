@@ -45,6 +45,8 @@ public:
 
     void test_encrypt();
 
+    void test_name_encrypt();
+
     void test_hash();
 
     void test_hash_curve();
