@@ -19,6 +19,7 @@ int main(int argc, char const *argv[]) {
     test.test_encrypt();
 //    test.test_hash_curve();
 //    test.test_ot();
+//    test.test_ecc_serialize();
 
 //    TestGmp tgmp;
 //    tgmp.test_gmp();

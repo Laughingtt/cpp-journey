@@ -34,6 +34,21 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
 add_subdirectory(extern/pybind11)
 pybind11_add_module(_ecdh_lib python/cpp/pybind.cpp)
 
+# protobuf
+#find_package(Protobuf REQUIRED)
+#include(FindProtobuf)
+#include_directories(${Protobuf_INCLUDE_DIRS})
+#
+##file(GLOB PROTOBUF_FILELIST proto/curve_point.proto)
+##
+##protobuf_generate_cpp(PROTO_SRC PROTO_INCL ${PROTOBUF_FILELIST})
+##add_library(encrypt_proto ${PROTO_HEADER} ${PROTO_SRC})
+##target_link_libraries(encrypt_proto INTERFACE ${Protobuf_LIBRARIES})
+#
+#message("Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
+#message("Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
+
+
 # add src
 add_library(_ecc_src ${SRC})
 target_link_libraries(_ecc_src ${LIBGMP_LIBRARIES}

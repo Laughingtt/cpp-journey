@@ -15,9 +15,7 @@ using namespace std;
 
 class Hash {
 public:
-    ~Hash() {
-
-    }
+    virtual ~Hash() = default;
 
     virtual string hash(const string &str);
 };

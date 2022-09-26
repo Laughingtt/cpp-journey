@@ -1,0 +1,8 @@
+syntax = "proto3";
+package tutorial;
+
+option optimize_for = LITE_RUNTIME;
+
+message CurvePoint{
+  repeated string point_list = 1;
+}
