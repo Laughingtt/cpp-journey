@@ -1,5 +1,6 @@
 setup.cfg
 setup.py
+python/ecdh_lib/__init__.py
 python/ecdh_lib.egg-info/PKG-INFO
 python/ecdh_lib.egg-info/SOURCES.txt
 python/ecdh_lib.egg-info/dependency_links.txt
