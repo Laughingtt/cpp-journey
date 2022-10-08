@@ -38,7 +38,8 @@ public:
         mpz_t mpz_r;
         // 一定要初始化mpz
         mpz_init(mpz_r);
-        ECC::get_random_mpz(mpz_r);
+        int bit_len = 256;
+        ECC::get_random_mpz(mpz_r, bit_len);
 
         cout << "random_state is :" << mpz_r << endl;
 
@@ -55,7 +56,7 @@ public:
         d = "363634";
         mpz_mod(r.get_mpz_t(), n.get_mpz_t(), d.get_mpz_t());
         cout << "mpz_mod(r,n,d) " << r << endl;
-        cout << "n%d" << n%d << endl;
+        cout << "n%d" << n % d << endl;
 
 
     }

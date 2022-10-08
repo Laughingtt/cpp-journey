@@ -19,9 +19,15 @@ R 方只能对其中一个密文解密。
 */
 class EccObliviousTransfer {
 public:
-    ECC *ecc = new ECC();
+    ECC *ecc;
 
     EccObliviousTransfer() {
+        ecc = new ECC();
+        ecc->generate_point();
+    }
+
+    EccObliviousTransfer(const string &curve_name) {
+        ecc = new ECC(curve_name);
         ecc->generate_point();
     }
 

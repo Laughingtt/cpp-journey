@@ -1,0 +1,9 @@
+/build*
+/docs*
+**/*.egg-info/
+**/__pycache__/
+/.vscode*
+/dist*
+/.idea
+/cmake-build-debug
+/algo-core

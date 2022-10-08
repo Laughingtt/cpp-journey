@@ -16,25 +16,16 @@ void Test::test_get_key() {
 
 void Test::test_ecc_mul() {
     cout << "=== test_ecc_mul func ===" << endl;
-    vector<mpz_class> P(2);
-    P[0] = "55066263022277343669578718895168534326250603453777594175500187360389116729240";
-    P[1] = "32670510020758816978083085130507043184471273380659243275938904335757337482424";
     vector<mpz_class> R(2);
-    mpz_class k = 27;
-    ecc->ecc_mul(P, k, R);
 
-    mpz_class p0, p1;
-    p0 = "99023490166718961467148584643029653267652245207820783364668071358307234645801";
-    p1 = "75362751621984629832705305750958516370071248757681753180287377123479199292501";
+    clock_t start = clock();
+    for (int i = 0; i < 10000; ++i) {
+        vector<mpz_class> msg_point = ecc->hash_to_curve("hello");
 
-
-    if (R[0] == p0 && R[1] == p1) {
-        cout << "test_ecc_mul accuracy success" << endl;
-    } else {
-        cout << "R[0] :" << R[0] << endl;
-        cout << "R[1] :" << R[1] << endl;
-        throw "Stop is mul error";
+        ecc->ecc_mul(msg_point, ecc->private_key, R);
     }
+    clock_t end = clock();
+    cout << "programTimes is :" << ((double) end - start) / CLOCKS_PER_SEC << endl;
 
 }
 
@@ -135,6 +126,8 @@ void Test::test_encrypt() {
     vector<string> enc_msg = ecc_encrypt.encrypt("hello");
     string dec_res = ecc_encrypt.decrypt(enc_msg);
     cout << "dec_res :" << dec_res << endl;
+    string hash = ecc_encrypt.hash_to_curve("hello");
+    cout << "hash to curve hash :" << hash << endl;
 
     clock_t start = clock();
     for (int i = 0; i < 10000; ++i) {
@@ -214,4 +207,20 @@ void Test::test_ot() {
     cout << "secret_key :choice " << choice << " " << secret_key << endl;
 
     throw "Stop is secret_key error";
+}
+
+void Test::test_ecc_serialize() {
+    tutorial::CurvePoint curve_point;
+    vector<string> point = {"hello", "hello2", "hello3"};
+    curve_point.mutable_point_list()->CopyFrom({point.begin(), point.end()});
+    string s;
+    curve_point.SerializeToString(&s);
+    cout << "curve_point.ByteSizeLong() : " << curve_point.ByteSizeLong() << " " << s.c_str() << endl;
+
+    tutorial::CurvePoint rs_curve_point;
+    rs_curve_point.ParseFromString(s);
+    cout << "rs_curve_point [0] " << rs_curve_point.point_list()[0] << endl;
+    cout << "rs_curve_point [1] " << rs_curve_point.point_list()[1] << endl;
+    cout << "rs_curve_point [2] " << rs_curve_point.point_list()[2] << endl;
+    google::protobuf::ShutdownProtobufLibrary();    //删除所有已分配的内存（Protobuf使用的堆内存）
 }

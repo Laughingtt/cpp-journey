@@ -5,19 +5,18 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-//#include "addressbook.pb.h"
-#include "curve_point.pb.h"
+#include "include/curve_point.pb.h"
 
 using namespace std;
 
 
 void ecc_serialize_test() {
     tutorial::CurvePoint curve_point;
-    vector<string> point = {"hello", "hello2", "hello3"};
+    vector<string> point = {"1", "2", "3"};
     curve_point.mutable_point_list()->CopyFrom({point.begin(), point.end()});
     string s;
     curve_point.SerializeToString(&s);
-    cout << "curve_point.ByteSizeLong() : " << curve_point.ByteSizeLong() << " " << s << endl;
+    cout << "curve_point.ByteSizeLong() : " << curve_point.ByteSizeLong() << " " << s.c_str() << endl;
 
     tutorial::CurvePoint rs_curve_point;
     rs_curve_point.ParseFromString(s);

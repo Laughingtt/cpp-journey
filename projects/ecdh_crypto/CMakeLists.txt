@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(ECDH)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall")
 option(BUILD_TESTS "Set to ON to build tests" ON)
 
@@ -19,7 +20,8 @@ message("OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 #-I
 include_directories("/usr/local/include"
-        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/ecc/include
+        ${PROJECT_SOURCE_DIR}
         ${OPENSSL_INCLUDE_DIR})
 
 # 添加需要链接的库文件路径
@@ -28,36 +30,36 @@ link_libraries(${OPENSSL_LIBRARIES})
 # 添加需要链接的库文件目录 -L
 #link_directories()
 
-aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
+aux_source_directory(${PROJECT_SOURCE_DIR}/ecc/src SRC)
+aux_source_directory(${PROJECT_SOURCE_DIR}/proto/src PROTO_SRC)
+message("sub after2 SRC PATH is " ${PROTO_SRC})
+
 
 # add pybind11
 add_subdirectory(extern/pybind11)
 pybind11_add_module(_ecdh_lib python/cpp/pybind.cpp)
 
 # protobuf
-#find_package(Protobuf REQUIRED)
-#include(FindProtobuf)
-#include_directories(${Protobuf_INCLUDE_DIRS})
-#
-##file(GLOB PROTOBUF_FILELIST proto/curve_point.proto)
-##
-##protobuf_generate_cpp(PROTO_SRC PROTO_INCL ${PROTOBUF_FILELIST})
-##add_library(encrypt_proto ${PROTO_HEADER} ${PROTO_SRC})
-##target_link_libraries(encrypt_proto INTERFACE ${Protobuf_LIBRARIES})
-#
-#message("Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
-#message("Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
+# protobuf
+find_package(Protobuf REQUIRED)
+message("Protobuf_INCLUDE_DIRS: ${Protobuf_INCLUDE_DIRS}")
+message("Protobuf_LIBRARIES: ${Protobuf_LIBRARIES}")
+include_directories(${Protobuf_INCLUDE_DIRS})
 
+add_subdirectory(proto)
 
 # add src
-add_library(_ecc_src ${SRC})
+add_library(_ecc_src ${SRC} ${PROTO_SRC})
 target_link_libraries(_ecc_src ${LIBGMP_LIBRARIES}
         ${LIBGMPXX_LIBRARIES}
-        ${OPENSSL_LIBRARIES})
+        ${OPENSSL_LIBRARIES}
+        ${Protobuf_LIBRARIES})
 
 target_link_libraries(_ecdh_lib PRIVATE _ecc_src)
 
 # add exec
-add_executable(main ${PROJECT_SOURCE_DIR}/main.cpp "${SRC}")
-target_link_libraries(main ${LIBGMP_LIBRARIES}
-        ${LIBGMPXX_LIBRARIES})
+add_executable(main ${PROJECT_SOURCE_DIR}/main.cpp "${SRC}" "${PROTO_SRC}")
+target_link_libraries(main
+        ${LIBGMP_LIBRARIES}
+        ${LIBGMPXX_LIBRARIES}
+        ${Protobuf_LIBRARIES})

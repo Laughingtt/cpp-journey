@@ -8,7 +8,8 @@ void ECC::set_curve_value() {
     // set mpz value
     if (curve_name == "secp256k1") {
         name = "secp256k1";
-        hex_len = 256 / 4;
+        bit_len = 256;
+        hex_len = bit_len / 4;
         param_a = 0;
         param_b = 7;
         param_p = "115792089237316195423570985008687907853269984665640564039457584007908834671663";
@@ -26,7 +27,8 @@ void ECC::set_curve_value() {
         param_n = "115792089210356248762697446949407573529996955224135760342422259061068512044369";
     } else if (curve_name == "prime192v1") {
         name = "prime192v1";
-        hex_len = 192 / 4;
+        bit_len = 192;
+        hex_len = bit_len / 4;
         param_a = "6277101735386680763835789423207666416083908700390324961276";
         param_b = "2455155546008943817740293915197451784769108058161191238065";
         param_p = "6277101735386680763835789423207666416083908700390324961279";
@@ -35,7 +37,8 @@ void ECC::set_curve_value() {
         param_n = "6277101735386680763835789423176059013767194773182842284081";
     } else if (curve_name == "secp160k1") {
         name = "secp160k1";
-        hex_len = 160 / 4;
+        bit_len = 160;
+        hex_len = bit_len / 4;
         param_a = 0;
         param_b = 7;
         param_p = "1461501637330902918203684832716283019651637554291";
@@ -44,14 +47,15 @@ void ECC::set_curve_value() {
         param_n = "1461501637330902918203686915170869725397159163571";
     } else if (curve_name == "secp128r1") {
         name = "secp128r1";
-        hex_len = 128 / 4;
+        bit_len = 128;
+        hex_len = bit_len / 4;
         param_a = "340282366762482138434845932244680310780";
         param_b = "308990863222245658030922601041482374867";
         param_p = "340282366762482138434845932244680310783";
         param_G[0] = "29408993404948928992877151431649155974";
         param_G[1] = "275621562871047521857442314737465260675";
         param_n = "340282366762482138443322565580356624661";
-    }else{
+    } else {
         throw "Stop is curve_name error";
     }
 }
@@ -72,15 +76,19 @@ ECC::ECC(const string &_curve_name) {
     this->curve_name = _curve_name;
     set_curve_value();
     view_param();
+    // 随机状态初始化
+    gmp_randinit_mt(random_state);
 }
 
 ECC::ECC() {
     curve_name = "secp128r1";
     set_curve_value();
     view_param();
+    // 随机状态初始化
+    gmp_randinit_mt(random_state);
 }
 
-void ECC::get_random_mpz(mpz_t mpz_r) {
+void ECC::get_random_mpz(mpz_t mpz_r, int &bit_length) {
     clock_t time = clock();
     gmp_randstate_t random_state;
 
@@ -89,9 +97,21 @@ void ECC::get_random_mpz(mpz_t mpz_r) {
     // 将初始种子设置到state
     gmp_randseed_ui(random_state, time);
     // 生成一个范围为0到2^n-1（含）的均匀分布的随机整数，赋值到 r
-    mpz_urandomb(mpz_r, random_state, 256);
+    mpz_urandomb(mpz_r, random_state, bit_length);
     //        mpz_init_set_str(mpz_r, "16", 10);
-    cout << "random_state is :" << mpz_r << endl;
+//    cout << "random_state is :" << mpz_r << endl;
+
+}
+
+void ECC::get_random_mpz2(mpz_t mpz_r, int &bit_length) {
+    clock_t time = clock();
+
+    // 将初始种子设置到state
+    gmp_randseed_ui(random_state, time);
+    // 生成一个范围为0到2^n-1（含）的均匀分布的随机整数，赋值到 r
+    mpz_urandomb(mpz_r, random_state, bit_length);
+    //        mpz_init_set_str(mpz_r, "16", 10);
+//    cout << "random_state is :" << mpz_r << endl;
 
 }
 
@@ -110,7 +130,7 @@ vector<mpz_class> ECC::get_param_g() {
 
 void ECC::generate_point(mpz_class sk) {
     while (sk == 0) {
-        ECC::get_random_mpz(sk.get_mpz_t());
+        ECC::get_random_mpz(sk.get_mpz_t(),bit_len);
         cout << "sk is :" << sk << endl;
     }
 

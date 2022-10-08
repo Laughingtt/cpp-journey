@@ -11,6 +11,7 @@
 #include "ctime"
 #include "hash.h"
 #include "ecc_oblivious_transfer.h"
+#include "proto/include/curve_point.pb.h"
 
 class Test {
 private:
@@ -31,10 +32,10 @@ public:
 
     void test_get_key();
 
-
     void test_ecc_mul();
 
     void test_ecc_add();
+
     void test_ecc_add2();
 
     void test_ecc_sub();
@@ -52,6 +53,8 @@ public:
     void test_hash_curve();
 
     void test_ot();
+
+    void test_ecc_serialize();
 
 };
 

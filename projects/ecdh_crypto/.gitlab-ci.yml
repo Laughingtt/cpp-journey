@@ -1,0 +1,35 @@
+stages:
+  - build
+  - upload
+
+build_whl_37:
+  stage: build
+  image: nexus.udai.link/builder/wheel-builder-py37:latest
+  script:
+    - source /opt/rh/devtoolset-9/enable
+    - source /data/projects/water-drop-algo/python-env/venv/bin/activate
+    - pip install -i https://nexus.udai.link/repository/pypi-all/simple wheel
+    - pip install -i https://nexus.udai.link/repository/pypi-all/simple setuptools
+    - rm -rf build
+    - rm -rf dist
+    - python setup.py bdist_wheel
+  artifacts:
+    name: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - dist/ecdh_lib-*.whl
+    expire_in: 30 mins
+    when: on_success
+  tags:
+    - build-alpha-00
+
+upload_whl:
+  stage: upload
+  image: python:3.6.5-slim-twine
+  needs:
+    - build_whl_37
+  script:
+    - twine upload --repository-url https://nexus.udai.link/repository/pypi-internal/ dist/ecdh_lib-*.whl -u $nexus_user -p $nexus_passwd
+  only:
+    - tags
+  tags:
+    - build-alpha-00

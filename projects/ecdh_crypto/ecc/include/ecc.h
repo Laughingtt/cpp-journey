@@ -21,7 +21,7 @@ class ECC {
 private:
     string curve_name = "secp128r1";
     string name;
-    int hex_len{};
+    int hex_len;
     mpz_class param_a;
     mpz_class param_b;
     mpz_class param_p;
@@ -32,13 +32,16 @@ private:
     //Subgroup cofactor.
     mpz_class param_h = 1;
 
+    void view_param();
+
+public:
+
+    int bit_len;
+    gmp_randstate_t random_state;
+
     vector<mpz_class> public_key = vector<mpz_class>(2); // point(x,y)
     mpz_class private_key; // 大整数
 
-    void view_param();
-
-
-public:
     HashString *hash_string = new HashString("sha256");
 
     ECC(const string &_curve_name);
@@ -76,7 +79,9 @@ public:
 
     void find_x_y_point(mpz_class &x, mpz_class &y);
 
-    static void get_random_mpz(mpz_t mpz_r);
+    static void get_random_mpz(mpz_t mpz_r, int &bit_length);
+
+    void get_random_mpz2(mpz_t mpz_r, int &bit_length);
 
     vector<mpz_class> hash_to_curve(const string &msg);
 
