@@ -3,12 +3,16 @@
 //
 
 #include "iostream"
+
 using namespace std;
 
-std::string get_greet(const std::string& who) {
+std::string get_greet(const std::string &who) {
     return "Hello " + who;
 }
 
-int main(){
+int main() {
     cout << "hello world" << endl;
+    cout << "hello world" << endl;
+    cout << get_greet("tianjian") << endl;
+    return 1;
 }

@@ -36,3 +36,8 @@
 *build
 *dist
 *pycache*
+*.clwb
+*bazel-bin
+*bazel-out
+*bazel-stage
+*bazel-testlogs
