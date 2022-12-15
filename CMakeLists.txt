@@ -12,4 +12,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall")
 #  add SUB
 if (BUILD_SUB)
     add_subdirectory(tools/thread_pool)
+    add_subdirectory(leetcode)
 endif()
