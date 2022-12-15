@@ -7,7 +7,7 @@
 #include <tuple>
 #include <vector>
 
-#include "parallel.h"
+#include "thread/parallel.h"
 
 namespace yacl {
 namespace internal {

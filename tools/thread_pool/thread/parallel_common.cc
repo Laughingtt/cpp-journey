@@ -1,8 +1,8 @@
 // Copyright (c) 2016 Facebook Inc.
 #include <sstream>
 
-#include "parallel.h"
-#include "thread_pool.h"
+#include "thread/parallel.h"
+#include "thread/thread_pool.h"
 
 namespace yacl {
 namespace {
