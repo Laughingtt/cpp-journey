@@ -21,8 +21,8 @@ void soldier_test(){
 }
 
 int main() {
-//    gun_test();
-    soldier_test();
+   gun_test();
+    // soldier_test();
     return 0;
 
 }
