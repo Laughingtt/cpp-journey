@@ -6,6 +6,7 @@
 #include "modules/io/mpc_common.h"
 #include <sstream>
 #include <iomanip>
+#include "tensor.h"
 
 using namespace std;
 
@@ -39,5 +40,6 @@ int main() {
     cout << " Hello World" << endl;
 
     bit_print();
+    test01();
     return 0;
 }
